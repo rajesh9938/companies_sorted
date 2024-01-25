@@ -6,19 +6,27 @@ import pandas as pd
 # Create your views here.
 
 def signup(request):
-    if 'user' not in request.session:
-        if request.method == "POST":
-            username = request.POST['username']
-            name = request.POST['name']
-            email = request.POST['email']
-            password = request.POST['password']
-            user = Users(username=username, name=name, email=email,password=password)
-            user.save()
-            return redirect("login")
+    try:
+        if 'user' not in request.session:
+            if request.method == "POST":
+                username = request.POST['username']
+                name = request.POST['name']
+                email = request.POST['email']
+                password = request.POST['password']
+                try:
+                    user = Users(username=username, name=name, email=email, password=password)
+                    user.save()
+                    return redirect("login")
+                except Exception as e:
+                    messages.error(request, f'Error creating account: {e}')
+                    return render(request, 'signup.html')
+            else:
+                return render(request, 'signup.html')
         else:
-            return render(request, 'signup.html')
-    else:
-        return redirect("uploaddata")
+            return redirect("uploaddata")
+    except Exception as e:
+        messages.error(request, f'Unexpected error: {e}')
+        return render(request, 'signup.html')
     
 def login(request):
     if 'user' not in request.session:
@@ -34,49 +42,70 @@ def login(request):
         return redirect("uploaddata")
 
 def logout(request):
-    if 'user' in request.session:
-        del request.session["user"]
-        return redirect("login")
+    try:
+        if 'user' in request.session:
+            del request.session['user']
+        return redirect('login')
+    except Exception as e:
+        return redirect('login')
 
 
 def users(request):
-    if 'user' in request.session:
-        if request.method == "POST":
-            name = request.POST['name']
-            email = request.POST['email']
-            user = CandidateUsers(name=name, email=email)
-            user.save()
-            messages.success(request, 'New User Added.')
-            return redirect("users")
-
+    try:
+        if 'user' in request.session:
+            if request.method == "POST":
+                name = request.POST['name']
+                email = request.POST['email']
+                user = CandidateUsers(name=name, email=email)
+                user.save()
+                messages.success(request, 'New User Added.')
+                return redirect("users")
+            else:
+                alldata = CandidateUsers.objects.all()
+                context = {
+                    "alldata": alldata
+                }
+                return render(request, 'allusers.html', context)
         else:
-            alldata = CandidateUsers.objects.all()
-            context = {
-                "alldata":alldata
-            }
+            return redirect("login")
 
-            return render(request, 'allusers.html',context)
-    else:
-        return redirect("login")
+    except Exception as e:
+        messages.error(request, f'An error occurred: {str(e)}')
+        return redirect("users")
     
-def querrybuilder(request):
-    if 'user' in request.session:
-        if request.method == "POST":
-            name = request.POST["name"]
-            industry = request.POST["industry"]
-            year_founded = request.POST["year_founded"]
-            locality = request.POST["locality"]
-            country = request.POST["country"]
-            current_employee_estimate = request.POST["current_employee_estimate"]
-            total_employee_estimate = request.POST["total_employee_estimate"]
-            data = CompaniesSorted.objects.filter(name=name,industry=industry,year_founded=year_founded,locality=locality,country=country,current_employee_estimate=current_employee_estimate,total_employee_estimate=total_employee_estimate)
-            total =  0
-            for i in data:
-                total+=1
-            messages.success(request, total)
-        alldata = CompaniesSorted.objects.all()
-        return render(request, "querybuilder.html",{"alldata":alldata})
-    else:
+def query_builder(request):
+    try:
+        if 'user' in request.session:
+            if request.method == "POST":
+                name = request.POST.get("name")
+                industry = request.POST.get("industry")
+                year_founded = request.POST.get("year_founded")
+                locality = request.POST.get("locality")
+                country = request.POST.get("country")
+                current_employee_estimate = request.POST.get("current_employee_estimate")
+                total_employee_estimate = request.POST.get("total_employee_estimate")
+                try:
+                    data = CompaniesSorted.objects.filter(
+                        name=name,
+                        industry=industry,
+                        year_founded=year_founded,
+                        locality=locality,
+                        country=country,
+                        current_employee_estimate=current_employee_estimate,
+                        total_employee_estimate=total_employee_estimate
+                    )
+                    total = len(data)
+                    messages.success(request, f"Total results: {total}")
+
+                except Exception as e:
+                    messages.error(request, f"Error in database query: {str(e)}")
+            alldata = CompaniesSorted.objects.all()
+            return render(request, "querybuilder.html", {"alldata": alldata})
+        else:
+            return redirect("login")
+
+    except Exception as e:
+        messages.error(request, f"Error: {str(e)}")
         return redirect("login")
 
 

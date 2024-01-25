@@ -6,7 +6,7 @@ urlpatterns=[
     path('uploaddata/',views.upload_csv,name="uploaddata"),
     path('logout/',views.logout,name="logout"),
     path('users/',views.users,name="users"),
-    path('querrybuilder/',views.querrybuilder,name="querrybuilder"),
+    path('querrybuilder/',views.query_builder,name="querrybuilder"),
 
 
 
