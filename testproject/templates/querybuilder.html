@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block body %}
+
+    <div class="container-fluid px-5 px-lg-5">
+        <div class="row mt-5">
+            <div class="col-lg-12">
+            {% for message in messages %}
+
+                <div class="alert alert-success alert-dismissible"> <button type="button" class="btn-close"
+                        data-bs-dismiss="alert"></button> <strong style="display: flex; align-items: center;"><i
+                            class="fa fa-check-circle fa-2x"> </i> {{message}} records found for the query</div>
+                        {% endfor %}
+
+                <h3 class="text-right mt-5">Querry Builder</h3>
+            </div>
+        </div>
+        <form action=" {% url 'querrybuilder' %}" method="POST">
+        <div class="row">
+            <div class="col-lg-4"> <input type="text" name="name" placeholder="Keyword" class="form-control mt-2 mb-3"> </div>
+            <div class="col-lg-4"> <select placeholder="Industry" name="industry" class="form-control mt-2 mb-3">
+                    <option>Industry</option>
+                    {% for data in alldata %}
+                    <option>{{data.industry}}</option>
+                    {% endfor %}
+                </select> </div>
+            <div class="col-lg-4"> <select placeholder="Year Of Founded" name="year_founded" class="form-control mt-2 mb-3">
+                    <option>Year Of Founded</option>
+                    {% for data in alldata %}
+                    <option>{{data.year_founded}}</option>
+                    {% endfor %}
+                </select> </div>
+            <div class="col-lg-4"> <select placeholder="City" name="locality" class="form-control mt-2 mb-3">
+                <option>City</option>
+                {% for data in alldata %}
+                <option>{{data.locality}}</option>
+                {% endfor %}
+                </select> </div>
+            <div class="col-lg-4"> <select placeholder="State" name="locality" class="form-control mt-2 mb-3">
+                    <option>State</option>
+                    {% for data in alldata %}
+                    <option>{{data.locality}}</option>
+                    {% endfor %}
+                </select> </div>
+            <div class="col-lg-4"> <select placeholder="Country" name="country" class="form-control mt-2 mb-3">
+                    <option>Country</option>
+                    {% for data in alldata %}
+                    <option>{{data.country}}</option>
+                    {% endfor %}
+                </select> </div>
+            <div class="col-lg-4"> <select placeholder="Employees(From)" name="current_employee_estimate" class="form-control mt-2 mb-3">
+                    <option>Employees(From)</option>
+                    {% for data in alldata %}
+                    <option>{{data.current_employee_estimate}}</option>
+                    {% endfor %}
+                </select> </div>
+            <div class="col-lg-4"> <select placeholder="Employees(To)" name="total_employee_estimate" class="form-control mt-2 mb-3">
+                    <option>Employees(To)</option>
+                    {% for data in alldata %}
+                    <option>{{data.total_employee_estimate}}</option>
+                    {% endfor %}
+                </select> </div>
+            <div class="row">
+                <div class="col-lg-2"> <button type="submit" class="btn btn-primary m-0">Querry Date</button>
+                    
+                    <button
+                        type="button" class="btn btn-reset">Reset</button> </div>
+                <div class="col-lg-10"></div>
+            </div>
+        </div>
+    </form>
+    </div> 
+
+{% endblock %}
